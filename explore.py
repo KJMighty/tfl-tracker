@@ -25,3 +25,17 @@ def status_summary(line):
 
 for line in lines:
     print(line["name"], is_good_service(line), status_summary(line))
+
+def parse(line):
+    return {
+        "line_id": line["id"],
+        "line_name": line["name"],
+        "mode": line["modeName"],
+        "is_good": is_good_service(line),
+        "status_description": status_summary(line),
+    }
+
+print(parse(lines[0]))
+for line in lines:
+    if line["name"] in ("Metropolitan", "Victoria"):
+        print(parse(line))
