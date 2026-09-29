@@ -16,3 +16,12 @@ for line in lines:
     for status in line["lineStatuses"]:
         if status["statusSeverity"] != 10:
             print(line["name"], status["statusSeverity"], status["statusSeverityDescription"], status.get("reason"))
+
+def is_good_service(line):
+    return all(status["statusSeverity"] == 10 for status in line["lineStatuses"])
+
+def status_summary(line):
+    return "; ".join(s["statusSeverityDescription"] for s in line["lineStatuses"])
+
+for line in lines:
+    print(line["name"], is_good_service(line), status_summary(line))
