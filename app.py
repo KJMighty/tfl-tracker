@@ -1,10 +1,39 @@
 # app.py
+
 import sqlite3
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
-
-app = FastAPI()
-
 from fastapi.middleware.cors import CORSMiddleware
+from apscheduler.schedulers.background import BackgroundScheduler
+
+from ingest import fetch_statuses, parse, save
+
+DB_PATH = "tfl.db"
+
+
+def run_ingest():
+    lines = fetch_statuses()
+    if lines:
+        rows = [parse(line) for line in lines]
+        save(rows)
+        print(f"[scheduler] Saved {len(rows)} rows")
+    else:
+        print("[scheduler] Skipping save, fetch failed")
+
+
+scheduler = BackgroundScheduler()
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    run_ingest()  # one immediate run on startup
+    scheduler.add_job(run_ingest, "interval", minutes=30)
+    scheduler.start()
+    yield
+    scheduler.shutdown()
+
+
+app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -12,8 +41,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-DB_PATH = "tfl.db"
 
 
 def get_connection():
