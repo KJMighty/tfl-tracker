@@ -1,8 +1,11 @@
 # ingest.py
 
-import sqlite3
+import os
 import requests
 from datetime import datetime, timezone
+import psycopg2
+
+DATABASE_URL = os.environ.get("DATABASE_URL")
 
 
 def fetch_statuses():
@@ -34,31 +37,40 @@ def parse(line):
     }
 
 
+def get_connection():
+    return psycopg2.connect(DATABASE_URL)
+
+
 def save(rows):
-    conn = sqlite3.connect("tfl.db")
+    conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS status_snapshots (
-            id INTEGER PRIMARY KEY,
-            fetched_at TEXT NOT NULL,
+            id SERIAL PRIMARY KEY,
+            fetched_at TIMESTAMPTZ NOT NULL,
             line_id TEXT NOT NULL,
             line_name TEXT NOT NULL,
             mode TEXT NOT NULL,
-            is_good INTEGER NOT NULL,
+            is_good BOOLEAN NOT NULL,
             status_description TEXT NOT NULL
         )
     """)
+    cursor.execute("""
+        CREATE INDEX IF NOT EXISTS idx_snap_line_time
+        ON status_snapshots (line_id, fetched_at)
+    """)
 
-    fetched_at = datetime.now(timezone.utc).isoformat()
+    fetched_at = datetime.now(timezone.utc)
 
     for row in rows:
         cursor.execute(
-            "INSERT INTO status_snapshots (fetched_at, line_id, line_name, mode, is_good, status_description) VALUES (?, ?, ?, ?, ?, ?)",
+            "INSERT INTO status_snapshots (fetched_at, line_id, line_name, mode, is_good, status_description) VALUES (%s, %s, %s, %s, %s, %s)",
             (fetched_at, row["line_id"], row["line_name"], row["mode"], row["is_good"], row["status_description"])
         )
 
     conn.commit()
+    cursor.close()
     conn.close()
 
 
