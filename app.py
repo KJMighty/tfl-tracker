@@ -1,4 +1,9 @@
 # app.py
+import sqlite3
+from fastapi import FastAPI
+
+app = FastAPI()
+
 from fastapi.middleware.cors import CORSMiddleware
 
 app.add_middleware(
@@ -7,11 +12,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-import sqlite3
-from fastapi import FastAPI
-
-app = FastAPI()
 
 DB_PATH = "tfl.db"
 
