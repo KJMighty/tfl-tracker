@@ -1,0 +1,61 @@
+body {
+    font-family: sans-serif; 
+    max-width: 900px; 
+    margin: 2rem auto; 
+    padding: 0 1rem;
+}
+
+h1 {
+    font-size: 1.4rem;
+}
+
+table {
+    width: 100%; 
+    border-collapse: collapse; 
+    margin-top: 1rem;
+}
+
+th, td {
+    text-align: left; 
+    padding: 0.5rem; 
+    border-bottom: 1px solid #ddd;
+}
+
+.good {
+    color: #1a7f37; 
+    font-weight: bold;
+}
+
+
+.bad {
+    color: #c0392b; 
+    font-weight: bold;
+}
+
+#reliability-chart {
+    margin-top: 2rem;
+}
+
+.bar-row {
+    display: flex; 
+    align-items: center; 
+    margin-bottom: 4px;
+}
+
+.bar-label {
+    width: 140px; 
+    font-size: 0.85rem;
+}
+
+.bar-track {
+    flex: 1; 
+    background: #eee; 
+    height: 14px; 
+    border-radius: 4px; 
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%; 
+    background: #1a7f37;
+}
