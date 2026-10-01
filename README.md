@@ -98,7 +98,7 @@ Returns the percentage of checks in the last `days` (default 7) where each line 
 ## Deployment notes
 
 - **Backend:** hosted on Render as a web service, started with `uvicorn app:app --host 0.0.0.0 --port $PORT`. The connection string is injected via the `DATABASE_URL` environment variable, pointing at a Render-managed Postgres instance in the same region.
-- **Database:** Render PostgreSQL (free tier), connected over Render's internal network for the deployed service, and via the external connection string for local development.
+- **Database:** Render PostgreSQL (free tier), connected over Render's internal network for the deployed service, and via the external connection string for local development. First load may take up to a minute if the backend has been idle due to using the free tier hosting.
 - **Front end:** hosted on Netlify as a static site (no build step). `app.js` points `API_BASE` at the live Render URL in production.
 
 ## Possible next steps
